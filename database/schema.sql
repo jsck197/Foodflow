@@ -1,55 +1,99 @@
+-- =========================================
+-- FOODFLOW DATABASE SCHEMA
+-- =========================================
+
+CREATE DATABASE IF NOT EXISTS foodflow;
+USE foodflow;
+
+-- =========================================
+-- USERS TABLE
+-- =========================================
+
 CREATE TABLE users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
-    full_name VARCHAR(100) NOT NULL,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL, -- Store hashed passwords only!
-    email VARCHAR(100),
-    phone VARCHAR(20),
-    
-    -- User Role (this controls access)
-    role ENUM('admin', 'manager', 'clerk') NOT NULL DEFAULT 'clerk',
-    
-    -- Account Status
-    is_active BOOLEAN DEFAULT TRUE,
-    account_locked BOOLEAN DEFAULT FALSE,
-    login_attempts INT DEFAULT 0,
-    
-    -- Timestamps
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL,
-    password_changed_at TIMESTAMP NULL,
-    
-    -- Additional Info
-    department VARCHAR(50) DEFAULT 'Catering',
-    employee_id VARCHAR(50),
-    
-    INDEX idx_role (role),
-    INDEX idx_username (username),
-    INDEX idx_active (is_active)
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL, -- ADMIN, MANAGER, CLERK
+    status VARCHAR(50) DEFAULT 'ACTIVE',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert default users (passwords should be hashed in real app)
--- Use password_hash('password', PASSWORD_DEFAULT) in PHP/Java
-INSERT INTO users (full_name, username, password, role) VALUES
-('System Admin', 'admin', '$2y$10$YourHashedPasswordHere', 'admin'),
-('Catering Manager', 'manager', '$2y$10$YourHashedPasswordHere', 'manager'),
-('Store Clerk One', 'clerk1', '$2y$10$YourHashedPasswordHere', 'clerk'),
-('Store Clerk Two', 'clerk2', '$2y$10$YourHashedPasswordHere', 'clerk');
+-- =========================================
+-- ITEMS TABLE
+-- =========================================
 
--- Create table for user activity log (audit trail)
-CREATE TABLE user_activity_log (
-    log_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    action VARCHAR(100) NOT NULL,
-    module VARCHAR(50),
+CREATE TABLE items (
+    item_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(100),
+    stock DOUBLE NOT NULL DEFAULT 0,
+    unit_of_measure VARCHAR(50),
     description TEXT,
-    ip_address VARCHAR(45),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    INDEX idx_user (user_id),
-    INDEX idx_timestamp (timestamp)
+    status VARCHAR(50) DEFAULT 'AVAILABLE'
 );
 
--- Example: Track who did what
-INSERT INTO user_activity_log (user_id, action, module, description, ip_address) 
-VALUES (3, 'ADD_SUPPLY', 'inventory', 'Added 50kg Sugar', '192.168.1.100');
+-- =========================================
+-- SUPPLY TABLE (Stock In)
+-- =========================================
+
+CREATE TABLE supply (
+    supply_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_id INT NOT NULL,
+    quantity DOUBLE NOT NULL,
+    supplier VARCHAR(100),
+    supply_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    recorded_by INT NOT NULL,
+
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- =========================================
+-- USAGE TABLE (Stock Out - Consumption)
+-- =========================================
+
+CREATE TABLE usage (
+    usage_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_id INT NOT NULL,
+    quantity DOUBLE NOT NULL,
+    usage_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    recorded_by INT NOT NULL,
+
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- =========================================
+-- DAMAGE LOG TABLE
+-- =========================================
+
+CREATE TABLE damage_log (
+    damage_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_id INT NOT NULL,
+    quantity DOUBLE NOT NULL,
+    damage_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    description TEXT,
+    reported_by INT NOT NULL,
+
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (reported_by) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- =========================================
+-- OPTIONAL: BORROW TRANSACTIONS (If needed)
+-- =========================================
+
+CREATE TABLE borrow_transaction (
+    borrow_id INT PRIMARY KEY AUTO_INCREMENT,
+    item_id INT NOT NULL,
+    quantity_borrowed INT NOT NULL,
+    quantity_returned INT DEFAULT 0,
+    borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    return_date DATETIME,
+    status VARCHAR(50) DEFAULT 'BORROWED', -- BORROWED, PARTIAL_RETURN, RETURNED
+    recorded_by INT NOT NULL,
+
+    FOREIGN KEY (item_id) REFERENCES items(item_id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(user_id) ON DELETE CASCADE
+);
