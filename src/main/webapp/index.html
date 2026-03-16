@@ -1,10 +1,52 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Start Page</title>
+        <title>FoodFlow Test Frontend</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="assets/css/app.css">
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <main class="shell">
+            <section class="hero">
+                <p class="eyebrow">FoodFlow</p>
+                <h1>Backend Test Frontend</h1>
+                <p class="lede">
+                    This branch keeps the current backend intact and adds a simple browser-facing shell
+                    so you can exercise login, inventory, supply, usage, damage, reporting, and user flows.
+                </p>
+                <div class="actions">
+                    <a class="button primary" href="login.jsp">Open login</a>
+                    <a class="button secondary" href="dashboard">Try dashboard route</a>
+                </div>
+            </section>
+
+            <section class="panel-grid">
+                <article class="panel">
+                    <h2>Expected routes</h2>
+                    <ul class="plain-list">
+                        <li><a href="items">Inventory items</a></li>
+                        <li><a href="supplies">Supply intake</a></li>
+                        <li><a href="usage">Usage logging</a></li>
+                        <li><a href="damage">Damage logging</a></li>
+                        <li><a href="reports">Reports</a></li>
+                        <li><a href="admin/users">Admin users</a></li>
+                    </ul>
+                </article>
+
+                <article class="panel">
+                    <h2>Seeded sample accounts</h2>
+                    <p>These usernames come from <code>database/sample_data.sql</code>.</p>
+                    <ul class="plain-list">
+                        <li><code>System Admin</code></li>
+                        <li><code>Department Head</code></li>
+                        <li><code>Head Cook</code></li>
+                        <li><code>Assistant Cook</code></li>
+                    </ul>
+                    <p class="muted">Passwords remain whatever value matches the seeded bcrypt hash in your database.</p>
+                </article>
+            </section>
+        </main>
+        <script src="assets/js/app.js"></script>
     </body>
 </html>

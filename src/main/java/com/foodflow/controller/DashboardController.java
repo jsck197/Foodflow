@@ -33,10 +33,12 @@ public class DashboardController extends HttpServlet {
                 break;
 
             case MANAGER:
+            case DEPARTMENT_HEAD:
                 response.sendRedirect("manager/dashboard.jsp");
                 break;
 
             case CLERK:
+            case COOK:
                 response.sendRedirect("clerk/dashboard.jsp");
                 break;
 
