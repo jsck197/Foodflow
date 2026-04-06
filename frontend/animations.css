@@ -1,0 +1,225 @@
+/* ============================================================
+   Foodflow catering  — Animations & Effects CSS
+  
+
+/* ========== SHAKE CARD EFFECT ========== */
+/* Shake on hover — applied to all .shake-card elements */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-4px) rotate(-0.4deg); }
+  30%  { transform: translateX(4px) rotate(0.4deg); }
+  45%  { transform: translateX(-3px) rotate(-0.3deg); }
+  60%  { transform: translateX(3px) rotate(0.3deg); }
+  75%  { transform: translateX(-2px); }
+  90%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shakeY {
+  0%   { transform: translateY(0); }
+  15%  { transform: translateY(-3px) scale(1.005); }
+  30%  { transform: translateY(2px) scale(0.998); }
+  45%  { transform: translateY(-2px); }
+  60%  { transform: translateY(1px); }
+  75%  { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes shakeGlow {
+  0%   { box-shadow: 0 8px 32px rgba(3, 10, 26, 0.6); }
+  50%  { box-shadow: 0 8px 32px rgba(3, 10, 26, 0.6), 0 0 20px rgba(6, 182, 212, 0.25), 0 0 40px rgba(37, 99, 235, 0.1); }
+  100% { box-shadow: 0 8px 32px rgba(3, 10, 26, 0.6); }
+}
+
+.shake-card {
+  animation: none;
+  will-change: transform;
+}
+
+.shake-card:hover {
+  animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both,
+             shakeGlow 0.45s ease both;
+  transform-origin: center center;
+}
+
+/* Stat cards get a slightly stronger shake */
+.stat-card.shake-card:hover {
+  animation: shakeY 0.4s ease both, shakeGlow 0.4s ease both;
+}
+
+/* ========== FADE IN ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ========== PULSE DOT ========== */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.75); }
+}
+
+/* ========== GLOW BORDER ANIMATION ========== */
+@keyframes glowBorder {
+  0%, 100% { border-color: rgba(30, 74, 158, 0.4); }
+  50%       { border-color: rgba(6, 182, 212, 0.6); box-shadow: 0 0 16px rgba(6, 182, 212, 0.2); }
+}
+
+/* ========== ROW SLIDE IN ========== */
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.row-enter {
+  animation: rowIn 0.3s ease forwards;
+}
+
+/* ========== NUMBER COUNT UP ========== */
+.count-up {
+  display: inline-block;
+  transition: all 0.05s linear;
+}
+
+/* ========== SKELETON LOADER ========== */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(17, 39, 86, 0.5) 25%,
+    rgba(30, 74, 158, 0.25) 50%,
+    rgba(17, 39, 86, 0.5) 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+/* ========== STATUS INDICATOR ========== */
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50%       { box-shadow: 0 0 0 5px transparent; }
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.status-dot.active  { background: #10b981; animation: statusPulse 2s infinite; }
+.status-dot.warning { background: #f59e0b; animation: statusPulse 2s infinite 0.5s; }
+.status-dot.danger  { background: #ef4444; animation: statusPulse 2s infinite 1s; }
+.status-dot.neutral { background: #64748b; }
+
+/* ========== TABLE ROW HOVER HIGHLIGHT ========== */
+.table-dark-custom tbody tr {
+  animation: fadeIn 0.25s ease;
+}
+
+/* ========== SIDEBAR NAV ITEMS ========== */
+.nav-item {
+  animation: fadeInLeft 0.3s ease;
+}
+.nav-item:nth-child(1)  { animation-delay: 0.02s; }
+.nav-item:nth-child(2)  { animation-delay: 0.04s; }
+.nav-item:nth-child(3)  { animation-delay: 0.06s; }
+.nav-item:nth-child(4)  { animation-delay: 0.08s; }
+.nav-item:nth-child(5)  { animation-delay: 0.10s; }
+.nav-item:nth-child(6)  { animation-delay: 0.12s; }
+.nav-item:nth-child(7)  { animation-delay: 0.14s; }
+.nav-item:nth-child(8)  { animation-delay: 0.16s; }
+.nav-item:nth-child(9)  { animation-delay: 0.18s; }
+
+/* ========== MODAL BOUNCE IN ========== */
+.modal.show .modal-dialog {
+  animation: fadeInScale 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ========== CARD STAGGER ON PAGE LOAD ========== */
+.page.active .col-xl-3:nth-child(1) .stat-card { animation: fadeIn 0.3s ease 0.05s both; }
+.page.active .col-xl-3:nth-child(2) .stat-card { animation: fadeIn 0.3s ease 0.12s both; }
+.page.active .col-xl-3:nth-child(3) .stat-card { animation: fadeIn 0.3s ease 0.19s both; }
+.page.active .col-xl-3:nth-child(4) .stat-card { animation: fadeIn 0.3s ease 0.26s both; }
+
+.page.active .col-md-4:nth-child(1) .stat-card { animation: fadeIn 0.3s ease 0.05s both; }
+.page.active .col-md-4:nth-child(2) .stat-card { animation: fadeIn 0.3s ease 0.12s both; }
+.page.active .col-md-4:nth-child(3) .stat-card { animation: fadeIn 0.3s ease 0.19s both; }
+
+/* ========== PANEL STAGGER ========== */
+.page.active .card-panel { animation: fadeIn 0.35s ease 0.1s both; }
+.page.active .col-xl-8 .card-panel { animation: fadeIn 0.35s ease 0.12s both; }
+.page.active .col-xl-4 .card-panel { animation: fadeIn 0.35s ease 0.2s both; }
+.page.active .col-xl-6:nth-child(1) .card-panel { animation: fadeIn 0.35s ease 0.15s both; }
+.page.active .col-xl-6:nth-child(2) .card-panel { animation: fadeIn 0.35s ease 0.25s both; }
+
+/* ========== TOPBAR ENTRANCE ========== */
+.topbar {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ========== GLOW LINE ========== */
+.glow-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  border: none;
+  margin: 0;
+  opacity: 0.4;
+}
+
+/* ========== SCAN LINE EFFECT (decorative) ========== */
+@keyframes scanline {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
+
+/* ========== LOGO PULSE ========== */
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(6, 182, 212, 0.25); }
+  50%       { box-shadow: 0 0 22px rgba(6, 182, 212, 0.45), 0 0 40px rgba(37, 99, 235, 0.2); }
+}
+
+.logo-icon {
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+/* ========== DELETE ROW ANIMATION ========== */
+@keyframes rowOut {
+  from { opacity: 1; transform: translateX(0); max-height: 60px; }
+  to   { opacity: 0; transform: translateX(20px); max-height: 0; padding: 0; }
+}
+
+.row-deleting {
+  animation: rowOut 0.3s ease forwards;
+  overflow: hidden;
+}
+
+/* ========== LOW STOCK ALERT PULSE ========== */
+@keyframes alertPulse {
+  0%, 100% { border-left-color: #f59e0b; }
+  50%       { border-left-color: #fcd34d; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+}
+
+.alert-item.warn { animation: alertPulse 2.5s ease infinite; }
+
+@keyframes dangerPulse {
+  0%, 100% { border-left-color: #ef4444; }
+  50%       { border-left-color: #f87171; box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+}
+
+.alert-item.danger { animation: dangerPulse 2s ease infinite; }
