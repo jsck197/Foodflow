@@ -1,0 +1,957 @@
+/* ========================================
+   INVENTRACK PRO - LOGIN PAGE STYLES
+   Lifted Tab Design & Login Specific Styles
+   ======================================== */
+
+:root {
+  --navy-950: #030a1a;
+  --navy-900: #060e24;
+  --navy-850: #08142e;
+  --navy-800: #0b1a3a;
+  --navy-750: #0e2048;
+  --navy-700: #112756;
+  --navy-600: #1a3a7a;
+  --navy-500: #1e4a9e;
+  --navy-400: #2563eb;
+  --navy-300: #3b82f6;
+  --navy-200: #93c5fd;
+  --navy-100: #dbeafe;
+
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --accent-amber: #f59e0b;
+
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-bright: #f8fafc;
+
+  --border-color: rgba(30, 74, 158, 0.4);
+  --border-bright: rgba(59, 130, 246, 0.55);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Mode */
+html[data-theme="light"] {
+  --navy-950: #f8fafc;
+  --navy-900: #f1f5f9;
+  --navy-850: #e2e8f0;
+  --navy-800: #cbd5e1;
+  --navy-750: #b4c0cc;
+  --navy-700: #94a3b8;
+  --navy-600: #64748b;
+  --navy-500: #475569;
+  --navy-400: #334155;
+  --navy-300: #1e293b;
+  --navy-200: #0f172a;
+  --navy-100: #020617;
+
+  --accent-cyan: #0891b2;
+  --accent-green: #059669;
+  --accent-red: #dc2626;
+  --accent-amber: #d97706;
+
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-bright: #0f172a;
+
+  --border-color: rgba(51, 65, 85, 0.2);
+  --border-bright: rgba(30, 41, 59, 0.35);
+}
+
+/* ========================================
+   GLOBAL LOGIN STYLES
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'Exo 2', sans-serif;
+  background: var(--navy-950);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--navy-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy-600);
+  border-radius: 3px;
+}
+
+/* ========================================
+   BACKGROUND EFFECTS
+   ======================================== */
+
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-color: var(--navy-950);
+  background-image:
+    linear-gradient(rgba(30, 74, 158, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 74, 158, 0.07) 1px, transparent 1px);
+  background-size: 52px 52px;
+  animation: gridScroll 20s linear infinite;
+}
+
+@keyframes gridScroll {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 52px 52px;
+  }
+}
+
+.bg-grid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 30%, rgba(3, 10, 26, 0.85) 100%);
+}
+
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 0;
+  animation: orbDrift 12s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  width: 520px;
+  height: 520px;
+  background: var(--navy-400);
+  top: -160px;
+  left: -160px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: var(--accent-cyan);
+  bottom: -120px;
+  right: -120px;
+  animation-delay: -4s;
+}
+
+.orb-3 {
+  width: 280px;
+  height: 280px;
+  background: var(--navy-500);
+  top: 40%;
+  left: 20%;
+  animation-delay: -8s;
+}
+
+@keyframes orbDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(40px, 30px) scale(1.08);
+  }
+}
+
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--navy-300);
+  opacity: 0;
+  animation: particleFloat linear infinite;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-20px) translateX(30px);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   LOGIN LAYOUT
+   ======================================== */
+
+.login-wrap {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ========================================
+   BRAND PANEL (LEFT SIDE)
+   ======================================== */
+
+.brand-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 52px;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid var(--border-color);
+  background: linear-gradient(160deg, rgba(11, 26, 58, 0.95) 0%, rgba(3, 10, 26, 0.9) 100%);
+}
+
+.brand-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--accent-cyan), transparent);
+  opacity: 0.5;
+}
+
+.brand-top {
+  animation: fadeSlideUp 0.7s ease 0.1s both;
+}
+
+.brand-bottom {
+  animation: fadeSlideUp 0.7s ease 0.5s both;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 44px;
+}
+
+.brand-logo-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--navy-400), var(--accent-cyan));
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.35), 0 0 60px rgba(37, 99, 235, 0.15);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.35), 0 0 60px rgba(37, 99, 235, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 36px rgba(6, 182, 212, 0.55), 0 0 80px rgba(37, 99, 235, 0.25);
+  }
+}
+
+.brand-logo-text {
+  line-height: 1.1;
+}
+
+.brand-logo-title {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--text-bright);
+}
+
+.brand-logo-sub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+}
+
+.brand-headline {
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 900;
+  line-height: 1.18;
+  color: var(--text-bright);
+  max-width: 480px;
+}
+
+.brand-headline em {
+  font-style: normal;
+  color: transparent;
+  background: linear-gradient(90deg, var(--accent-cyan), var(--navy-300));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.brand-sub {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 380px;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+/* ========================================
+   ACCESS LEVEL CARDS
+   ======================================== */
+
+.access-cards {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  animation: fadeSlideUp 0.7s ease 0.3s both;
+}
+
+.access-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  background: rgba(30, 74, 158, 0.1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  cursor: default;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.access-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 99px 0 0 99px;
+}
+
+.access-card.manager::after {
+  background: var(--accent-cyan);
+}
+
+.access-card.catering::after {
+  background: var(--accent-amber);
+}
+
+.access-card.staff::after {
+  background: var(--accent-green);
+}
+
+.access-card.viewer::after {
+  background: var(--navy-300);
+}
+
+.access-card:hover {
+  background: rgba(30, 74, 158, 0.2);
+  border-color: var(--border-bright);
+  animation: cardHoverShake 0.4s ease both;
+}
+
+.access-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.access-icon.cyan {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+}
+
+.access-icon.amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+}
+
+.access-icon.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green);
+}
+
+.access-icon.blue {
+  background: rgba(37, 99, 235, 0.18);
+  color: var(--navy-300);
+}
+
+.access-info {
+  flex: 1;
+}
+
+.access-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.access-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.access-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 99px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.access-badge.manager {
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--accent-cyan);
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.access-badge.catering {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-amber);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.access-badge.staff {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent-green);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.access-badge.viewer {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--navy-300);
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+/* ========================================
+   STATS STRIP
+   ======================================== */
+
+.stat-strip {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.stat-strip-item {
+  flex: 1;
+  padding: 13px 16px;
+  text-align: center;
+  border-right: 1px solid var(--border-color);
+  transition: var(--transition);
+  cursor: default;
+}
+
+.stat-strip-item:last-child {
+  border-right: none;
+}
+
+.stat-strip-item:hover {
+  background: rgba(30, 74, 158, 0.15);
+  animation: cardHoverShake 0.35s ease both;
+}
+
+.stat-strip-val {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent-cyan);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1;
+}
+
+.stat-strip-lbl {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ========================================
+   SYSTEM STATUS
+   ======================================== */
+
+.system-status {
+  position: absolute;
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+}
+
+.sys-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sys-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.sys-dot.online {
+  background: var(--accent-green);
+  animation: sysOnline 2s infinite;
+}
+
+.sys-dot.warning {
+  background: var(--accent-amber);
+}
+
+@keyframes sysOnline {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+}
+
+/* ========================================
+   FORM PANEL (RIGHT SIDE)
+   ======================================== */
+
+.form-panel {
+  width: 490px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 46px;
+  background: linear-gradient(180deg, var(--navy-900) 0%, var(--navy-950) 100%);
+  position: relative;
+  overflow-y: auto;
+}
+
+.form-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--navy-400), transparent);
+  animation: scanLine 3s ease-in-out infinite alternate;
+}
+
+@keyframes scanLine {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ========================================
+   LOGIN CARD (LIFTED TAB DESIGN)
+   ======================================== */
+
+.login-card {
+  animation: cardEntrance 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ========================================
+   LIFTED TAB NAVIGATION
+   ======================================== */
+
+.login-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 2;
+}
+
+.login-tab {
+  flex: 1;
+  padding: 12px 16px;
+  background: rgba(30, 74, 158, 0.1);
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.login-tab:not(:last-child) {
+  border-right: none;
+}
+
+.login-tab:first-child {
+  border-radius: var(--radius-md) 0 0 0;
+}
+
+.login-tab:last-child {
+  border-radius: 0 var(--radius-md) 0 0;
+}
+
+/* LIFTED EFFECT */
+.login-tab.active {
+  background: linear-gradient(180deg, var(--navy-850) 0%, var(--navy-800) 100%);
+  color: var(--accent-cyan);
+  border: 1px solid var(--border-bright);
+  border-bottom: 1px solid var(--navy-800);
+  /* Lifted effect */
+  transform: translateY(-4px);
+  box-shadow: 
+    0 -8px 24px rgba(6, 182, 212, 0.2),
+    0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.login-tab:hover:not(.active) {
+  background: rgba(30, 74, 158, 0.15);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   LOGIN CARD HEADER
+   ======================================== */
+
+.login-card-header {
+  margin-bottom: 28px;
+}
+
+.login-card-header h3 {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text-bright);
+  margin-bottom: 4px;
+}
+
+.login-card-header p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  background: var(--navy-750);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: 'Exo 2', sans-serif;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  font-size: 13px;
+  transition: var(--transition);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  background: var(--navy-700);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+  outline: none;
+}
+
+/* ========================================
+   LOGIN BUTTON
+   ======================================== */
+
+.login-btn {
+  width: 100%;
+  padding: 12px 18px;
+  background: linear-gradient(135deg, var(--accent-cyan), #0891b2);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 8px;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.35);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   UTILITIES
+   ======================================== */
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardHoverShake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-1px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .login-wrap {
+    flex-direction: column;
+  }
+
+  .brand-panel {
+    flex: 0;
+    padding: 32px 28px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    min-height: auto;
+  }
+
+  .form-panel {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .brand-headline {
+    font-size: 24px;
+  }
+
+  .stat-strip {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-wrap {
+    min-height: auto;
+  }
+
+  .brand-panel {
+    padding: 24px 20px;
+  }
+
+  .brand-logo {
+    margin-bottom: 20px;
+  }
+
+  .brand-headline {
+    font-size: 20px;
+    max-width: 100%;
+  }
+
+  .access-cards {
+    margin-top: 16px;
+    gap: 6px;
+  }
+
+  .form-panel {
+    padding: 32px 24px;
+  }
+
+  .login-card-header {
+    margin-bottom: 20px;
+  }
+
+  .login-tabs {
+    margin-bottom: 20px;
+  }
+
+  .login-tab {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-panel {
+    padding: 16px;
+  }
+
+  .brand-logo {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .brand-logo-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .brand-logo-title {
+    font-size: 18px;
+  }
+
+  .brand-headline {
+    font-size: 18px;
+  }
+
+  .brand-sub {
+    font-size: 12px;
+  }
+
+  .access-cards {
+    display: none;
+  }
+
+  .form-panel {
+    padding: 24px 16px;
+  }
+
+  .login-card-header h3 {
+    font-size: 18px;
+  }
+
+  .login-tabs {
+    margin-bottom: 16px;
+  }
+
+  .login-tab {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .login-btn {
+    padding: 10px 14px;
+    font-size: 12px;
+  }
+}

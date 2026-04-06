@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FOODflow — Catering Manager Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="animations.css"/>
+  <style>
+    .role-crown{display:inline-flex;align-items:center;gap:8px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:99px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent-amber);}
+    .access-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;}
+    .access-tile{background:linear-gradient(135deg,var(--navy-850),var(--navy-800));border:1px solid var(--border-color);border-radius:var(--radius-md);padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:var(--transition);text-decoration:none;color:var(--text-primary);}
+    .access-tile:hover{border-color:var(--border-bright);transform:translateY(-3px);box-shadow:0 8px 24px rgba(3,10,26,0.6);color:var(--text-bright);}
+    .tile-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .tile-label{font-size:13px;font-weight:700;}.tile-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+    .locked-tile{opacity:0.35;cursor:not-allowed;position:relative;}
+    .locked-tile::after{content:'\f023';font-family:'Font Awesome 6 Free';font-weight:900;position:absolute;top:8px;right:10px;color:var(--text-muted);font-size:11px;}
+    .expiry-table tr.expiring-soon td{background:rgba(245,158,11,0.06)!important;}
+    .expiry-table tr.expired td{background:rgba(239,68,68,0.06)!important;}
+  </style>
+</head>
+<body>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo-wrap"><span class="logo-icon"><i class="fa-solid fa-warehouse"></i></span><div><span class="logo-title">FOODflow</span><span class="logo-sub">catering</span></div></div>
+    <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+  </div>
+  <ul class="nav-menu">
+      <li class="nav-section-label">MAIN</li>
+      <li class="nav-item active" data-page="dashboard">
+        <a href="#" onclick="App.navigate('dashboard'); return false;"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+      </li>
+     <li class="nav-item" data-page="available">
+        <a href="#" onclick="App.navigate('available'); return false;"><i class="fa-solid fa-boxes-stacked"></i><span>Available Stock</span></a>
+      </li>
+    <li class="nav-section-label">CARTEGORIES</li>
+    <li class="nav-item" data-page="perishable">
+        <a href="#" onclick="App.navigate('perishable'); return false;"><i class="fa-solid fa-apple-whole"></i><span>Perishable Goods</span></a>
+      </li>
+        <li class="nav-item" data-page="damaged">
+        <a href="#" onclick="App.navigate('damaged'); return false;"><i class="fa-solid fa-triangle-exclamation"></i><span>Damaged Items</span></a>
+      </li>
+       <li class="nav-item" data-page="nonperishable">
+        <a href="#" onclick="App.navigate('nonperishable'); return false;"><i class="fa-solid fa-box-archive"></i><span>Non-Perishable Goods</span></a>
+      </li>
+
+      <li class="nav-section-label">RECORDS</li>
+      <li class="nav-item" data-page="staffrecords">
+        <a href="#" onclick="App.navigate('staffrecords'); return false;"><i class="fa-solid fa-users"></i><span>Staff Records</span></a>
+      </li>
+      <li class="nav-item" data-page="reports">
+        <a href="#" onclick="App.navigate('reports'); return false;"><i class="fa-solid fa-chart-bar"></i><span>Reports</span></a>
+      </li>
+    <li class="nav-section-label">CATERING MANAGER</li>
+    <li class="nav-item"><a href="#" onclick="openAddStaffModal(); return false;"><i class="fa-solid fa-user-plus"></i><span>Add Staff Member</span></a></li>
+    <li class="nav-section-label">ACCOUNT</li>
+    <li class="nav-item"><a href="login.html"><i class="fa-solid fa-right-from-bracket"></i><span>Sign Out</span></a></li>
+  </ul>
+   
+
+  <div class="sidebar-footer">
+    <div class="user-badge"><div class="avatar"><i class="fa-solid fa-utensils"></i></div><div><div class="user-name" id="userName">Catering Manager</div><div class="user-role">Catering Access</div></div></div>
+  </div>
+</nav>
+
+<div class="main-wrapper" id="mainWrapper">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h2 class="page-title" id="pageTitle">Dashboard</h2>
+      <div class="breadcrumb-wrap"><span class="bc-item">FOODflow</span><i class="fa-solid fa-chevron-right bc-sep"></i><span class="bc-item active" id="bcActive">Dashboard</span></div>
+    </div>
+    <div class="topbar-right">
+      <button id="themeToggle" class="icon-btn" title="Switch Theme"><i class="fa-solid fa-sun"></i></button>
+      <span class="role-crown"><i class="fa-solid fa-utensils"></i> Catering Manager</span>
+      <div class="date-badge"><i class="fa-regular fa-calendar"></i><span id="currentDate"></span></div>
+      <button class="icon-btn" onclick="window.location.href='login.html'" title="Sign Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </header>
+
+  <div class="page-container">
+    
+    <!-- ========== DASHBOARD PAGE ========== -->
+    <section class="page active" id="page-dashboard">
+      <!-- Welcome -->
+      <div class="card-panel shake-card mb-4" style="border-left:3px solid var(--accent-amber);background:linear-gradient(90deg,rgba(245,158,11,0.06),transparent)">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="width:56px;height:56px;background:linear-gradient(135deg,#78350f,var(--accent-amber));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:0 0 20px rgba(245,158,11,0.3)"><i class="fa-solid fa-utensils"></i></div>
+          <div>
+            <div style="font-size:20px;font-weight:900;color:var(--text-bright)" id="welcomeName">Welcome, Catering Manager</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-top:3px">Your workspace focuses on <strong style="color:var(--accent-amber)">perishable goods</strong>, kitchen supply tracking, food-related checkouts, and expiry management.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access Notice -->
+      <div class="alert-item mb-4" style="border-left:3px solid var(--accent-amber);border-radius:var(--radius-md);background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2)">
+        <span style="color:var(--accent-amber);font-size:16px"><i class="fa-solid fa-circle-info"></i></span>
+        <div style="font-size:13px;flex:1"><strong style="color:var(--accent-amber)">Catering Access Level:</strong> You have access to perishable goods, food stock, kitchen department checkouts, and food-related damage reports. Non-perishable management and analytics are restricted to Store Manager.</div>
+      </div>
+
+      <!-- Stats -->
+      <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6"><div class="stat-card shake-card" data-color="green"><div class="stat-icon"><i class="fa-solid fa-apple-whole"></i></div><div class="stat-info"><span class="stat-label">Perishable Items</span><span class="stat-value">8</span><span class="stat-trend up"><i class="fa-solid fa-arrow-trend-up"></i> Your category</span></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card shake-card" data-color="red"><div class="stat-icon"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><span class="stat-label">Expiring Soon</span><span class="stat-value">3</span><span class="stat-trend down"><i class="fa-solid fa-triangle-exclamation"></i> Within 7 days</span></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card shake-card" data-color="amber"><div class="stat-icon"><i class="fa-solid fa-users"></i></div><div class="stat-info"><span class="stat-label">Kitchen Checkouts</span><span class="stat-value">4</span><span class="stat-trend up"><i class="fa-solid fa-arrow-trend-up"></i> This week</span></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="stat-card shake-card" data-color="blue"><div class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="stat-info"><span class="stat-label">Food Damage</span><span class="stat-value">3</span><span class="stat-trend down"><i class="fa-solid fa-ban"></i> 2 expired</span></div></div></div>
+      </div>
+     
+      <div class="row g-4 mb-4">
+        <!-- Expiry Alerts -->
+        <div class="col-xl-8">
+          <div class="card-panel shake-card">
+            <div class="panel-header"><h5><i class="fa-solid fa-clock"></i> Expiry Alert — Perishable Items</h5><span class="badge badge-warn">3 Urgent</span></div>
+            <div class="table-responsive">
+              <table class="table table-dark-custom expiry-table">
+                <thead><tr><th>Item</th><th>Stock</th><th>Expiry Date</th><th>Days Left</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr class="expired"><td><strong>Orange Juice</strong></td><td>7 L</td><td>Apr 15, 2025</td><td><span class="expiry-badge expired"><i class="fa-solid fa-circle-xmark"></i> Expired</span></td><td><span class="badge badge-red">Expired</span></td></tr>
+                  <tr class="expiring-soon"><td><strong>Eggs</strong></td><td>18 pcs</td><td>Apr 10, 2025</td><td><span class="expiry-badge soon">3d left</span></td><td><span class="badge badge-amber">Use Now</span></td></tr>
+                  <tr class="expiring-soon"><td><strong>Yogurt (Plain)</strong></td><td>60 pcs</td><td>Apr 8, 2025</td><td><span class="expiry-badge soon">1d left</span></td><td><span class="badge badge-red">Critical</span></td></tr>
+                  <tr><td><strong>Fresh Milk</strong></td><td>120 L</td><td>Apr 5, 2025</td><td><span class="expiry-badge fresh">12d left</span></td><td><span class="badge badge-green">Good</span></td></tr>
+                  <tr><td><strong>Sliced Bread</strong></td><td>85 pcs</td><td>Apr 2, 2025</td><td><span class="expiry-badge fresh">9d left</span></td><td><span class="badge badge-green">Good</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+     
+        <!-- Module Access -->
+        <div class="col-xl-4">
+          <div class="card-panel shake-card">
+            <div class="panel-header"><h5><i class="fa-solid fa-th-large"></i> Your Modules</h5></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <a href="#" onclick="App.navigate('perishable'); return false;" class="access-tile"><div class="tile-icon" style="background:rgba(16,185,129,0.15);color:var(--accent-green)"><i class="fa-solid fa-apple-whole"></i></div><div><div class="tile-label">Perishable Goods</div><div class="tile-sub">Stock & expiry</div></div></a>
+              <a href="#" onclick="App.navigate('available'); return false;" class="access-tile"><div class="tile-icon" style="background:rgba(245,158,11,0.15);color:var(--accent-amber)"><i class="fa-solid fa-users"></i></div><div><div class="tile-label">Available Stock</div><div class="tile-sub">All items</div></div></a>
+              <a href="#" onclick="App.navigate('damaged'); return false;" class="access-tile"><div class="tile-icon" style="background:rgba(239,68,68,0.15);color:var(--accent-red)"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="tile-label">Damaged Items</div><div class="tile-sub">Expired / spoiled</div></div></a>
+              <button class="access-tile" onclick="openAddStaffModal()" style="border:2px dashed rgba(245,158,11,0.4);background:transparent;cursor:pointer;"><div class="tile-icon" style="background:rgba(245,158,11,0.15);color:var(--accent-amber)"><i class="fa-solid fa-user-plus"></i></div><div><div class="tile-label">Add Staff Member</div><div class="tile-sub">Create new user</div></div></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== AVAILABLE STOCK PAGE ========== -->
+    <section class="page" id="page-available">
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-boxes-stacked"></i> All Available Items</h5>
+        </div>
+        <div class="table-responsive">
+          <table id="availableTable" class="table table-dark-custom" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID</th><th>Item Name</th><th>Category</th>
+                <th>Stock Qty</th><th>Unit</th><th>Min Level</th>
+                <th>Status</th><th>Last Updated</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="availableTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== DAMAGED ITEMS PAGE ========== -->
+    <section class="page" id="page-damaged">
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="red">
+            <div class="stat-icon"><i class="fa-solid fa-x"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Total Damaged</span>
+              <span class="stat-value" id="totalDamaged">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="amber">
+            <div class="stat-icon"><i class="fa-solid fa-rotate"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Under Review</span>
+              <span class="stat-value" id="reviewCount">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="blue">
+            <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Written Off</span>
+              <span class="stat-value" id="writtenOffCount">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-triangle-exclamation"></i> Damaged / Broken Items Register</h5>
+        </div>
+        <div class="table-responsive">
+          <table id="damagedTable" class="table table-dark-custom" style="width:100%">
+            <thead>
+              <tr>
+                <th>Ref#</th><th>Item Name</th><th>Category</th>
+                <th>Qty Damaged</th><th>Damage Type</th>
+                <th>Reported By</th><th>Date</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="damagedTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PERISHABLE PAGE ========== -->
+    <section class="page" id="page-perishable">
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-apple-whole"></i> Perishable Goods Inventory</h5>
+          <span class="badge badge-warn" id="expiringBadge">0 Expiring Soon</span>
+        </div>
+        <div class="table-responsive">
+          <table id="perishableTable" class="table table-dark-custom" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID</th><th>Item Name</th><th>Stock Qty</th>
+                <th>Unit</th><th>Expiry Date</th><th>Days Left</th>
+                <th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="perishableTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== NON-PERISHABLE PAGE ========== -->
+    <section class="page" id="page-nonperishable">
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-box-archive"></i> Non-Perishable Goods Inventory</h5>
+        </div>
+        <div class="table-responsive">
+          <table id="nonperishableTable" class="table table-dark-custom" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID</th><th>Item Name</th><th>Stock Qty</th>
+                <th>Unit</th><th>Shelf Life</th><th>Supplier</th>
+                <th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="nonperishableTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STAFF RECORDS PAGE ========== -->
+    <section class="page" id="page-staffrecords">
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="blue">
+            <div class="stat-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Items Checked Out</span>
+              <span class="stat-value" id="checkedOutTotal">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="green">
+            <div class="stat-icon"><i class="fa-solid fa-user-clock"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Pending Returns</span>
+              <span class="stat-value" id="pendingReturns">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card shake-card" data-color="amber">
+            <div class="stat-icon"><i class="fa-solid fa-users-gear"></i></div>
+            <div class="stat-info">
+              <span class="stat-label">Active Staff</span>
+              <span class="stat-value" id="activeStaff">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-clipboard-user"></i> Staff Item Checkout Records</h5>
+        </div>
+        <div class="table-responsive">
+          <table id="staffTable" class="table table-dark-custom" style="width:100%">
+            <thead>
+              <tr>
+                <th>Ref#</th><th>Staff Name</th><th>Dept.</th>
+                <th>Item Name</th><th>Qty Taken</th>
+                <th>Date Taken</th><th>Return Date</th>
+                <th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="staffTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== REPORTS PAGE ========== -->
+    <section class="page" id="page-reports">
+      <!-- Report Header -->
+      <div class="card-panel shake-card mb-4" style="border-left:3px solid var(--accent-cyan);background:linear-gradient(90deg,rgba(6,182,212,0.06),transparent)">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <h4 style="font-size:18px;font-weight:700;color:var(--text-bright);margin-bottom:4px"><i class="fa-solid fa-chart-line"></i> Comprehensive Inventory Reports</h4>
+            <p style="font-size:12px;color:var(--text-muted)">Real-time analytics and insights — Last updated: <span id="reportUpdateTime">Just now</span></p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-mini" onclick="location.reload()" title="Refresh Reports"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            <button class="btn-mini" onclick="window.print()" title="Print Reports"><i class="fa-solid fa-print"></i> Print</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Statistics -->
+      <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+          <div class="card-panel" style="background:linear-gradient(135deg,rgba(16,185,129,0.15),transparent);border-left:3px solid var(--accent-green)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px">Total Stock Value</p>
+                <p style="font-size:24px;font-weight:900;color:var(--accent-green)">Ksh <span id="reportTotalValue">250,000</span></p>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px"><i class="fa-solid fa-arrow-trend-up"></i> <span id="reportValueTrend">+5%</span> vs last month</p>
+              </div>
+              <div style="font-size:32px;color:var(--accent-green);opacity:0.3"><i class="fa-solid fa-coins"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card-panel" style="background:linear-gradient(135deg,rgba(239,68,68,0.15),transparent);border-left:3px solid var(--accent-red)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px">Damage Loss</p>
+                <p style="font-size:24px;font-weight:900;color:var(--accent-red)"><span id="reportDamageLoss">5,000</span></p>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px"><i class="fa-solid fa-triangle-exclamation"></i> <span id="reportDamageCount">8</span> items damaged</p>
+              </div>
+              <div style="font-size:32px;color:var(--accent-red);opacity:0.3"><i class="fa-solid fa-ban"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card-panel" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),transparent);border-left:3px solid var(--accent-amber)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px">Turnover Rate</p>
+                <p style="font-size:24px;font-weight:900;color:var(--accent-amber)" id="reportTurnover">75%</p>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px"><i class="fa-solid fa-users"></i> Staff checkouts this month</p>
+              </div>
+              <div style="font-size:32px;color:var(--accent-amber);opacity:0.3"><i class="fa-solid fa-chart-pie"></i></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+          <div class="card-panel" style="background:linear-gradient(135deg,rgba(37,99,235,0.15),transparent);border-left:3px solid var(--navy-300)">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div>
+                <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:4px">Avg Lead Time</p>
+                <p style="font-size:24px;font-weight:900;color:var(--navy-300)" id="reportLeadTime">3.2d</p>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px"><i class="fa-solid fa-hourglass-end"></i> Average restock time</p>
+              </div>
+              <div style="font-size:32px;color:var(--navy-300);opacity:0.3"><i class="fa-solid fa-clock"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Summary Table -->
+      <div class="card-panel shake-card mb-4">
+        <div class="panel-header">
+          <h5><i class="fa-solid fa-table"></i> Category Summary Report</h5>
+          <span class="badge badge-blue">All Time</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-dark-custom">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Total Items</th>
+                <th>In Stock</th>
+                <th>Low Stock</th>
+                <th>Damaged</th>
+                <th>Avg Value</th>
+                <th>Health Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportSummaryBody">
+              <tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text-muted)">Loading report data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Expiry Alert Summary -->
+      <div class="row g-4">
+        <div class="col-xl-6">
+          <div class="card-panel shake-card">
+            <div class="panel-header">
+              <h5><i class="fa-solid fa-clock"></i> Expiring Soon (Next 7 Days)</h5>
+              <span class="badge badge-warn" id="expiringBadge">0</span>
+            </div>
+            <div id="expiringList" style="max-height:300px;overflow-y:auto;">
+              <p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Loading expiry data...</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div class="card-panel shake-card">
+            <div class="panel-header">
+              <h5><i class="fa-solid fa-flag"></i> Top 5 Most Damaged Items</h5>
+            </div>
+            <div id="topDamagedList" style="max-height:300px;overflow-y:auto;">
+              <p style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px;">Loading damage data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="data.js"></script>
+<script src="charts.js"></script>
+<script src="app.js"></script>
+
+<!-- Add Staff Modal -->
+<div id="addStaffModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:2000;align-items:center;justify-content:center;animation:fadeIn 0.3s ease;">
+  <div style="background:linear-gradient(135deg,var(--navy-850),var(--navy-800));border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:32px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideUpScale 0.3s cubic-bezier(0.34,1.56,0.64,1);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+      <h4 style="margin:0;color:var(--text-bright);font-weight:900;display:flex;align-items:center;gap:10px;"><i class="fa-solid fa-user-plus" style="color:var(--accent-amber)"></i> Add New Staff Member</h4>
+      <button onclick="closeAddStaffModal()" style="background:none;border:none;color:var(--text-muted);font-size:24px;cursor:pointer;padding:0;"><i class="fa-solid fa-times"></i></button>
+    </div>
+
+    <form id="addStaffForm" onsubmit="generateStaffCredentials(event)" style="display:flex;flex-direction:column;gap:16px;">
+      <!-- Full Name -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;">Full Name *</label>
+        <input type="text" id="staffName" placeholder="John Doe" required style="width:100%;background:var(--navy-750);border:1px solid var(--border-color);color:var(--text-primary);border-radius:var(--radius-sm);padding:12px 14px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-amber)'" onblur="this.style.borderColor='var(--border-color)'"/>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;">Email Address *</label>
+        <input type="email" id="staffEmail" placeholder="john@example.com" required style="width:100%;background:var(--navy-750);border:1px solid var(--border-color);color:var(--text-primary);border-radius:var(--radius-sm);padding:12px 14px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-amber)'" onblur="this.style.borderColor='var(--border-color)'"/>
+      </div>
+
+      <!-- Role -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;">Role *</label>
+        <select id="staffRole" required style="width:100%;background:var(--navy-750);border:1px solid var(--border-color);color:var(--text-primary);border-radius:var(--radius-sm);padding:12px 14px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;cursor:pointer;transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-amber)'" onblur="this.style.borderColor='var(--border-color)'">
+          <option value="">Select a role</option>
+          <option value="staff">Staff</option>
+          <option value="auditor">Auditor</option>
+          <option value="Storekeeper">Storekeeper</option>
+        </select>
+      </div>
+
+      <!-- Department -->
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:8px;">Department</label>
+        <input type="text" id="staffDept" placeholder="e.g., Kitchen, Catering" style="width:100%;background:var(--navy-750);border:1px solid var(--border-color);color:var(--text-primary);border-radius:var(--radius-sm);padding:12px 14px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:var(--transition);" onfocus="this.style.borderColor='var(--accent-amber)'" onblur="this.style.borderColor='var(--border-color)'"/>
+      </div>
+
+      <!-- Auto-Generated Credentials (Hidden) -->
+      <div id="credentialsSection" style="display:none;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-md);padding:16px;margin-top:12px;">
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px;"><i class="fa-solid fa-shield-alt"></i> Login Credentials (Auto-Generated)</p>
+        <div style="background:var(--navy-750);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;">
+          <p style="font-size:10px;color:var(--text-muted);margin:0 0 4px 0;">Username</p>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <code id="genUsername" style="flex:1;background:var(--navy-900);padding:8px 10px;border-radius:4px;border:1px solid var(--border-color);color:var(--accent-amber);font-size:12px;font-family:'JetBrains Mono',monospace;word-break:break-all;"></code>
+            <button type="button" onclick="copyText(document.getElementById('genUsername').textContent)" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:var(--accent-amber);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;transition:var(--transition);" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'"><i class="fa-solid fa-copy"></i></button>
+          </div>
+        </div>
+        <div style="background:var(--navy-750);border:1px solid var(--border-color);border-radius:var(--radius-sm);padding:12px;">
+          <p style="font-size:10px;color:var(--text-muted);margin:0 0 4px 0;">Password</p>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <code id="genPassword" style="flex:1;background:var(--navy-900);padding:8px 10px;border-radius:4px;border:1px solid var(--border-color);color:var(--accent-amber);font-size:12px;font-family:'JetBrains Mono',monospace;word-break:break-all;"></code>
+            <button type="button" onclick="copyText(document.getElementById('genPassword').textContent)" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);color:var(--accent-amber);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700;transition:var(--transition);" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'"><i class="fa-solid fa-copy"></i></button>
+          </div>
+        </div>
+        <p style="font-size:10px;color:var(--accent-amber);margin-top:12px;margin-bottom:0;"><i class="fa-solid fa-info-circle"></i> Share these credentials securely with the staff member. They must change password on first login.</p>
+      </div>
+
+      <!-- Buttons -->
+      <div style="display:flex;gap:12px;margin-top:20px;">
+        <button type="submit" style="flex:1;background:linear-gradient(135deg,var(--accent-amber),#d97706);border:none;color:white;padding:12px 16px;border-radius:var(--radius-sm);font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;cursor:pointer;transition:var(--transition);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">Generate Credentials</button>
+        <button type="button" onclick="closeAddStaffModal();resetStaffForm()" style="flex:1;background:rgba(30,74,158,0.1);border:1px solid var(--border-color);color:var(--text-primary);padding:12px 16px;border-radius:var(--radius-sm);font-family:'Exo 2',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;cursor:pointer;transition:var(--transition);" onmouseover="this.style.background='rgba(30,74,158,0.2)'" onmouseout="this.style.background='rgba(30,74,158,0.1)'">Close</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUpScale { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  #addStaffModal.show { display: flex !important; }
+</style>
+
+<script>
+  function openAddStaffModal() {
+    document.getElementById('addStaffModal').classList.add('show');
+  }
+  
+  function closeAddStaffModal() {
+    document.getElementById('addStaffModal').classList.remove('show');
+  }
+  
+  function resetStaffForm() {
+    document.getElementById('addStaffForm').reset();
+    document.getElementById('credentialsSection').style.display = 'none';
+  }
+  
+  function generateStaffCredentials(e) {
+    e.preventDefault();
+    const name = document.getElementById('staffName').value;
+    const email = document.getElementById('staffEmail').value;
+    const role = document.getElementById('staffRole').value;
+    const dept = document.getElementById('staffDept').value || 'Kitchen';
+    
+    if (!name || !email || !role) {
+      alert('Please fill all required fields');
+      return;
+    }
+    
+    // Generate username from email prefix
+    const username = email.split('@')[0].toLowerCase();
+    // Generate random password
+    const password = generateRandomPassword();
+    
+    document.getElementById('genUsername').textContent = username;
+    document.getElementById('genPassword').textContent = password;
+    document.getElementById('credentialsSection').style.display = 'block';
+    
+    // Store staff data
+    const staffData = {
+      name: name,
+      email: email,
+      role: role,
+      department: dept,
+      username: username,
+      password: password,
+      createdDate: new Date().toLocaleDateString()
+    };
+    
+    console.log('New staff member added:', staffData);
+    // Here you would normally send this to a server
+  }
+  
+  function generateRandomPassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  }
+  
+  function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
+    }).catch(() => {
+      alert('Failed to copy');
+    });
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('currentDate').textContent=new Date().toLocaleDateString('en-KE',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+    document.getElementById('sidebarToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('collapsed');document.getElementById('mainWrapper').classList.toggle('collapsed');});
+    const u=JSON.parse(sessionStorage.getItem('it_user')||'{}');
+    if(u.name){document.getElementById('userName').textContent=u.name;document.getElementById('welcomeName').textContent='Welcome, '+u.name;}
+    
+    // Close modal on background click
+    document.getElementById('addStaffModal').addEventListener('click', (e) => {
+      if (e.target.id === 'addStaffModal') closeAddStaffModal();
+    });
+  });
+</script>
+</body>
+</html>

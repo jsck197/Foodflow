@@ -1,144 +1,85 @@
-# FoodFlow
+FOODflow cartering DEPT
 
-FoodFlow is a Jakarta Servlet + MySQL web application for school catering inventory work. The repo now follows the diagram-defined 3-role system: `ADMIN`, `DEPARTMENT_HEAD`, and `STORE_KEEPER`.
 
-## Current Status
+## Overview
+A full-featured inventory management web application with a dark blue industrial UI theme,
+shake-on-hover card effects, and comprehensive inventory tracking features.
 
-This repository is in an in-progress full-stack testing state.
+---
 
-- The domain and database design are defined in the repo and aligned to the supplied diagrams.
-- Core Java packages exist for config, controllers, DAOs, models, services, and utilities.
-- Servlet routes are primarily mapped with annotations such as `@WebServlet`.
-- JSP pages exist for login, dashboards, inventory, requests, reporting, user management, and admin system operations.
-- There are currently no real automated tests in `src/test`.
-
-## What Exists Today
-
-### Backend
-
-- Java 11 Maven WAR project
-- Jakarta EE 10 API dependency
-- Servlet controllers under `src/main/java/com/foodflow/controller`
-- DAO classes under `src/main/java/com/foodflow/dao`
-- Models and enums under `src/main/java/com/foodflow/model`
-- Utility/config classes such as database connection, password handling, and role checks
-- Store request workflow backed by `store_requests` and `request_details`
-
-### Database
-
-- MySQL schema in [database/schema.sql](C:\Users\Byron\Documents\NetBeansProjects\FoodFlow\database\schema.sql)
-- Sample data in [database/sample_data.sql](C:\Users\Byron\Documents\NetBeansProjects\FoodFlow\database\sample_data.sql)
-- SQL query collections in [database/queries](C:\Users\Byron\Documents\NetBeansProjects\FoodFlow\database\queries)
-- Setup and reference docs in the top-level [database](C:\Users\Byron\Documents\NetBeansProjects\FoodFlow\database) folder
-
-### Web Layer
-
-- `web.xml` is present but minimal and currently only sets session timeout.
-- Annotation-based servlet mapping is the primary routing mechanism.
-- `WebConfig.AppFilter` exists in code but is not currently registered, so it is not active.
-- The default web entry page now links to the corrected 3-role test flows.
-
-## Canonical Database Folder
-
-The repo-root [database](C:\Users\Byron\Documents\NetBeansProjects\FoodFlow\database) folder is the canonical source for SQL and database docs.
-
-- Maven is configured to package that folder into the application resources at build time.
-- Build output ends up under `target/classes/database` and `WEB-INF/classes/database`.
-- `src/main/resources/database` is no longer the source of truth for SQL files.
-
-## Project Structure
-
-```text
-FoodFlow/
-├── database/                   # Canonical SQL scripts and database docs
-├── docs/                       # Extra project documentation
-├── scripts/                    # Helper scripts
-├── src/
-│   ├── main/
-│   │   ├── java/com/foodflow/
-│   │   │   ├── config/
-│   │   │   ├── controller/
-│   │   │   ├── dao/
-│   │   │   ├── model/
-│   │   │   ├── service/
-│   │   │   └── util/
-│   │   ├── resources/
-│   │   └── webapp/
-│   └── test/
-├── pom.xml
-└── README.md
+## File Structure
+```
+inventory-system/
+├── index.html              ← Main SPA entry point (open this in browser)
+├── css/
+│   ├── style.css           ← Main dark-blue theme stylesheet
+│   └── animations.css      ← Shake effects, keyframes, transitions
+├── js/
+│   ├── data.js             ← LocalStorage data store + CRUD helpers
+│   ├── charts.js           ← Chart.js chart definitions
+│   └── app.js              ← Main application logic, routing, tables
+└── jsp/
+    ├── inventoryApi.jsp    ← RESTful JSON API endpoint (Java/Tomcat)
+    └── dashboard.jsp       ← Server-side rendered dashboard example
 ```
 
-## NetBeans Folder Mapping
+---
 
-If you are working in NetBeans, some folders are shown with IDE labels instead of raw filesystem paths.
+## Features
+- **Dashboard** — Summary stats with count-up animation, low stock alerts, activity feed, trend charts
+- **Available Stock** — Full item register with category/status filters, stock bar indicators
+- **Damaged Items** — Broken/damaged item log, write-off workflow, damage type classification
+- **Perishable Goods** — Expiry tracking, days-remaining badges, expiry warnings
+- **Non-Perishable Goods** — Long-shelf-life inventory, supplier tracking
+- **Staff Records** — Staff checkout log, return tracking, department filtering
+- **Reports** — 4 Chart.js charts: damaged by type, staff trend, stock status donut, low-stock bar
 
-- `Web Pages` in NetBeans maps to `src/main/webapp`
-- `Source Packages` maps to `src/main/java`
-- Backend resources map to `src/main/resources`
+---
 
-The README uses the real filesystem paths so the structure stays accurate even outside NetBeans.
+## Technologies Used
+| Technology | Purpose |
+|---|---|
+| HTML5 | Structure & semantics |
+| CSS3 (custom) | Dark blue theme, animations, shake effects |
+| JavaScript (ES6+) | App logic, routing, CRUD |
+| Bootstrap 5.3 | Grid layout, modals, toasts, responsive |
+| Chart.js 4.4 | All data visualizations |
+| DataTables 1.13 | Sortable/searchable/paginated tables |
+| Font Awesome 6.5 | Icons |
+| Google Fonts | Exo 2 + JetBrains Mono |
+| Java Server Pages (JSP) | Server-side rendering + REST API |
+| LocalStorage | Client-side data persistence |
 
-## Frontend Layout
+---
 
-For this project, browser-facing frontend files should live under `src/main/webapp`, which is the same location NetBeans shows as `Web Pages`.
+## Running the Frontend
+1. Open `index.html` directly in any modern browser — no server needed
+2. Data persists in browser LocalStorage between sessions
+3. Click "Reset Data" in the console to restore sample data: `InvenData.resetAll()`
 
-- `src/main/webapp/index.html`
-  Content here: branch landing page and seeded credential hints
-- `src/main/webapp/WEB-INF/`
-  Content here: `web.xml` and server-side web configuration
-- `src/main/webapp/assets/css/`
-  Content here: frontend stylesheets
-- `src/main/webapp/assets/js/`
-  Content here: frontend JavaScript
-- `src/main/webapp/assets/images/`
-  Content here: frontend images and icons
+---
 
-`src/main/resources` should stay focused on backend/runtime resources rather than public frontend assets.
+## Running the JSP Files (Java/Tomcat)
+1. Deploy to Apache Tomcat 9+ or any Java EE container
+2. Place files under `WEB-INF/` or as a web module
+3. Configure JNDI datasource in `context.xml` for DB integration
+4. Access API: `GET /inventoryApi.jsp?action=getStats`
 
-## Tech Stack
+---
 
-- Java 11
-- Jakarta EE 10 APIs
-- Maven
-- MySQL
-- WAR packaging for deployment to a compatible servlet container
+## Shake Card Effect
+Every card uses the `.shake-card` CSS class. On hover:
+- X-axis displacement animation (`@keyframes shake`)
+- Y-axis bounce for stat cards (`@keyframes shakeY`)
+- Cyan glow pulse (`@keyframes shakeGlow`)
 
-## Build And Run
+---
 
-### Prerequisites
+## Item Categories
+- **Perishable** — Foods, dairy, beverages with expiry dates
+- **Non-Perishable** — Dry goods, cleaning supplies, canned items
 
-- Java 11+
-- Maven 3.6+
-- MySQL 8+
-- A servlet container such as Tomcat
-
-### Database Setup
-
-```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p foodflow < database/sample_data.sql
-```
-
-### Build
-
-```bash
-mvn clean package
-```
-
-The build produces a WAR and packages the canonical `database/` folder into the application classpath.
-
-## Implementation Notes
-
-- `DatabaseConfig` currently uses `DriverManager` with hardcoded local connection settings.
-- `SecurityConfig` now reflects the role logic from the diagrams.
-- Seed users are `Admin User`, `Department Head`, and `Store Keeper`.
-- Sample passwords are `admin123`, `head123`, and `keeper123`.
-- If you are looking for the actual packaged SQL resources, check the build output under `target/classes/database`.
-
-## Next Cleanup Targets
-
-- Align docs with the code and schema as implementation evolves.
-- Register shared web filters only if they are actually needed.
-- Replace placeholder pages and forwards with real JSP or view templates.
-- Add tests around DAO and controller behavior.
+## Item Statuses
+- 🟢 In Stock — qty > min level
+- 🟡 Low Stock — qty ≤ min level
+- 🔴 Out of Stock — qty = 0
