@@ -30,8 +30,13 @@ public class WebConfig {
     /**
      * CORS setup if needed later for frontend separation
      */
-    public static void enableCORS(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Origin", "*"); // Allow all for now
+    public static void enableCORS(HttpServletRequest request, HttpServletResponse response) {
+        String origin = request.getHeader("Origin");
+        if (origin == null || origin.isBlank()) {
+            origin = "*";
+        }
+        response.setHeader("Access-Control-Allow-Origin", origin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     }

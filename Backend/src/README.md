@@ -9,9 +9,27 @@ The `config` folder contains all the configuration files necessary for the backe
 
 - **`DatabaseConfig.java`**
   - Handles database connectivity.
+  - Reads database connection settings from `FOODFLOW_DB_URL`, `FOODFLOW_DB_USER`, and `FOODFLOW_DB_PASSWORD` environment variables or from `src/main/resources/db.properties`.
   - Provides methods to get a database `Connection` object.
   - Used by DAO classes to interact with the database.
   - Supports connection pooling for efficient resource management.
+
+### Database setup
+
+- The SQL schema is located at `database/schema.sql`.
+- Run this script in MySQL to create the `foodflow` database and required tables.
+- Update `Backend/src/main/resources/db.properties` or set environment variables before starting the app.
+- Required environment variables:
+  - `FOODFLOW_DB_URL`
+  - `FOODFLOW_DB_USER`
+  - `FOODFLOW_DB_PASSWORD`
+
+- **MySQL driver** is already included via `mysql-connector-j` in `pom.xml`.
+
+- **Example command**:
+  - `mysql -u root -p < database/schema.sql`
+
+- After schema creation, start the backend and the DAO layer will connect automatically.
 
 - **`SecurityConfig.java`**
   - Manages role-based access and authentication logic.

@@ -182,38 +182,60 @@ function handleLoginSubmit(form, tabIndex) {
 function submitLogin(form, tabIndex) {
   const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('.login-btn');
   const originalText = submitBtn.textContent;
-
-  // Get role from tab or form
+  const emailInput = form.querySelector('input[type="email"]') || form.querySelector('input[name*="email"]');
+  const passwordInput = form.querySelector('input[type="password"]');
+  const email = emailInput ? emailInput.value.trim() : '';
+  const password = passwordInput ? passwordInput.value : '';
   const tabs = document.querySelectorAll('.login-tab');
   const roles = ['Manager', 'Staff', 'Catering', 'Auditor'];
   const selectedRole = roles[tabIndex] || 'User';
 
-  // Show loading state
   submitBtn.disabled = true;
+  submitBtn.classList.add('loading');
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
 
-  // Simulate login delay
-  setTimeout(() => {
-    const emailInput = form.querySelector('input[type="email"]') || form.querySelector('input[name*="email"]');
-    const userEmail = emailInput ? emailInput.value : 'user';
+  fetch('/auth?json=true', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json'
+    },
+    body: new URLSearchParams({
+      username: email,
+      password: password
+    })
+  })
+    .then(async (res) => {
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Login failed');
+      }
+      return data;
+    })
+    .then((data) => {
+      localStorage.setItem('userName', email.split('@')[0]);
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userRole', selectedRole);
 
-    // Store login info
-    localStorage.setItem('userName', userEmail.split('@')[0]);
-    localStorage.setItem('userEmail', userEmail);
-    localStorage.setItem('userRole', selectedRole);
-
-    // Redirect based on role
-    const redirectUrl = getRedirectUrl(tabIndex);
-
-    // Show success animation
-    showSuccessAnimation(() => {
-      window.location.href = redirectUrl;
+      showSuccessAnimation(() => {
+        window.location.href = data.redirect || 'dashboard';
+      });
+    })
+    .catch((err) => {
+      const errorText = err.message || 'Invalid username or password.';
+      const errorContainer = document.getElementById('passError') || document.getElementById('emailError');
+      if (errorContainer) {
+        errorContainer.querySelector('span').textContent = errorText;
+        errorContainer.classList.add('show');
+      }
+      playErrorAnimation();
+    })
+    .finally(() => {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      submitBtn.innerHTML = originalText;
     });
-
-    // Reset button
-    submitBtn.disabled = false;
-    submitBtn.textContent = originalText;
-  }, 1500);
 }
 
 function getRedirectUrl(tabIndex) {
